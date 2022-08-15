@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -14,6 +15,7 @@ export class RicoPreset {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
+  @Expose()
   @Column({ type: 'json' })
   detail: any;
 
@@ -36,9 +38,13 @@ export class RicoPreset {
     name: 'web_id',
   })
   organizer: ricoOrganize;
+
   @Column({ nullable: false })
+  @Expose()
   web_id: string;
 
+
   @Column({ nullable: true, default: 'true' })
+  @Expose()
   status: boolean;
 }

@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -13,21 +14,26 @@ import { RicoPreset } from './ricoCss.entity';
 @Entity()
 export class agentOrganize {
   @PrimaryGeneratedColumn('uuid')
+  @Expose()
   id: string;
 
   @Column()
+  @Expose()
   domain: string;
 
   @Column({
     default:
       'https://image-storage-betkub.s3.ap-southeast-1.amazonaws.com/images/ffeuZ2TFVCcdP123zqF7aufImZoUhmGZaVu5zcMx.png',
   })
+  @Expose()
   logo: string;
 
   @Column()
+  @Expose()
   company: string;
 
   @Column({ nullable: true })
+  @Expose()
   agent: string;
 
   @CreateDateColumn({
@@ -46,6 +52,7 @@ export class agentOrganize {
   updated_at: Date;
 
   @Column()
+  @Expose()
   status: boolean;
 
   @OneToOne(() => AgentPreset, (preset) => preset.organizer)
@@ -55,21 +62,28 @@ export class agentOrganize {
 @Entity()
 export class ricoOrganize {
   @PrimaryGeneratedColumn('uuid')
+  @Expose()
   id: string;
 
   @Column()
+  @Expose()
   domain: string;
 
   @Column({
     default:
       'https://image-storage-betkub.s3.ap-southeast-1.amazonaws.com/images/ffeuZ2TFVCcdP123zqF7aufImZoUhmGZaVu5zcMx.png',
   })
+  @Expose()
   logo: string;
 
+ 
   @Column()
+  @Expose()
   company: string;
 
+  
   @Column({ nullable: true })
+  @Expose()
   agent: string;
 
   @CreateDateColumn({
@@ -87,7 +101,9 @@ export class ricoOrganize {
   })
   updated_at: Date;
 
+
   @Column()
+  @Expose()
   status: boolean;
 
   @OneToOne(() => RicoPreset, (preset) => preset.organizer)

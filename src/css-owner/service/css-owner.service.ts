@@ -130,10 +130,12 @@ export class CssOwnerService {
         // return agentPreset;
         throw new NotFoundException(['preset not find!!!']);
       } else {
-        return await this.agentpreset_repo.save({
-          ...agentPreset,
-          detail: detail,
-        });
+        return await (
+          await this.agentpreset_repo.save({
+            ...agentPreset,
+            detail: detail,
+          })
+        ).detail;
       }
     }
     return;

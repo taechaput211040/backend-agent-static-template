@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -17,10 +18,13 @@ export class AgentPreset {
   constructor(partial?: Partial<AgentPreset | AgentPreset[]>) {
     Object.assign(this, partial);
   }
+
   @PrimaryGeneratedColumn('uuid')
+  @Expose()
   id: string;
 
   @Column({ type: 'json' })
+  @Expose()
   detail: any;
 
   @CreateDateColumn({
@@ -43,8 +47,10 @@ export class AgentPreset {
   })
   organizer: agentOrganize;
   @Column({ nullable: false })
+  @Expose()
   web_id: string;
 
   @Column({ nullable: true, default: 'true' })
+  @Expose()
   status: boolean;
 }
