@@ -12,6 +12,7 @@ import { AgentPreset } from '../entity/agentClass.entity';
 import { agentOrganize } from '../entity/profile.entity';
 import { CreateOrganizeDto } from '../input/create.organize.dto';
 import { CreatePreset } from '../input/create.preset.dto';
+import { UpdatePresetDto } from '../input/update.preset.dto';
 
 @Injectable()
 export class CssOwnerService {
@@ -40,16 +41,25 @@ export class CssOwnerService {
   }
 
   // set profile origanize service
-  async setOrganizeByDomain(input: CreateOrganizeDto): Promise<agentOrganize> {
-    const exitingOrganize = await this.organize_repo.findOne({
-      where: [{ domain: input.domain }, { company: input.company }],
-    });
-    if (exitingOrganize)
-      throw new BadRequestException(['domain or company is already taken']);
-    let result = await this.organize_repo.save({
-      ...input,
-    });
-    return result;
+  async setOrganizeByDomain(
+    input: CreateOrganizeDto,
+    type,
+  ): Promise<agentOrganize> {
+    if (type.toLowerCase() === `agent`) {
+      const exitingOrganize = await this.organize_repo.findOne({
+        where: [{ domain: input.domain }, { company: input.company }],
+      });
+      if (exitingOrganize)
+        throw new BadRequestException(['domain or company is already taken']);
+      let result = await this.organize_repo.save({
+        ...input,
+      });
+      return result;
+    } else if (type.toLowerCase() === `rico`) {
+      return;
+    } else {
+      throw new BadGatewayException(['Type not declear!!']);
+    }
   }
 
   //create Preset service by web_id
@@ -79,10 +89,53 @@ export class CssOwnerService {
         .createQueryBuilder('t')
         .where('t.web_id = :web_id', { web_id: uuid })
         .orderBy('t.created_at', 'ASC');
+    } else if (type.toLowerCase() === 'rico') {
+    } else {
+      throw new NotFoundException(['result is not found']);
     }
   }
-  public async getOnePresetbyId(type: string, uuid: string) {
-    const result = await this.getPresetByOrganize(type, uuid).getOne();
-    return result.detail;
+
+  private async getIdbyOrigins(headers) {
+    const headerWeb = headers.origin;
+    const uuid = await this.organize_repo.findOne({
+      where: [{ domain: headerWeb }],
+    });
+    return uuid;
+  }
+
+  public async getOnePresetbyId(type: string, headers: string) {
+    const profile = await this.getIdbyOrigins(headers);
+    const result = await this.getPresetByOrganize(type, profile.id).getOne();
+    if (!profile || !result) {
+      throw new NotFoundException(['Profile is not find!!!']);
+    } else {
+      return result.detail;
+    }
+  }
+
+  public async updatePrestById(
+    type: string,
+    id: string,
+    presetId: string,
+    detail: UpdatePresetDto,
+  ): Promise<AgentPreset> {
+    if (type.toLowerCase() === `agent`) {
+      const agentPreset = await this.agentpreset_repo
+        .createQueryBuilder('t')
+        .where('t.web_id = :web_id', { web_id: id })
+        .andWhere('t.id = :id', { id: presetId })
+        .orderBy('t.created_at', 'ASC')
+        .getOne();
+      if (!agentPreset) {
+        // return agentPreset;
+        throw new NotFoundException(['preset not find!!!']);
+      } else {
+        return await this.agentpreset_repo.save({
+          ...agentPreset,
+          detail: detail,
+        });
+      }
+    }
+    return;
   }
 }

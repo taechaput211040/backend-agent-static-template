@@ -7,8 +7,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateOrganizeDto } from './input/create.organize.dto';
+import { type } from 'os';
 import { CreatePreset } from './input/create.preset.dto';
+import { UpdatePresetDto } from './input/update.preset.dto';
 import { CssOwnerService } from './service/css-owner.service';
 
 @Controller('/css')
@@ -19,10 +20,14 @@ export class CssOwnerController {
   getPreset(@Headers() headers) {
     return this.setService.getfucntion(headers);
   }
+
+  //createOrganize
   @Post('/organization')
-  createOrganize(@Body() input: any) {
-    return this.setService.setOrganizeByDomain(input);
+  createOrganize(@Body() input: any, @Param('type') type: any) {
+    return this.setService.setOrganizeByDomain(input, type);
   }
+
+  //create Preset
   @Post('/preset/:type/:uuid')
   createpreset(
     @Param('type') type: string,
@@ -31,13 +36,21 @@ export class CssOwnerController {
   ) {
     return this.setService.createPreset(type, uuid, detail);
   }
-  @Get('/preset/:type/:uuid')
-  getpreset(@Param('type') type: string, @Param('uuid') uuid: string) {
-    return this.setService.getOnePresetbyId(type, uuid);
+
+  //get Preset By type
+  @Get('/preset/:type')
+  getpreset(@Param('type') type: string, @Headers() headers) {
+    return this.setService.getOnePresetbyId(type, headers);
   }
 
-  @Patch()
-  updatePreset() {
-    return `update Preset`;
+  //update Preset
+  @Patch('/preset/:type/:uuid/:presetId')
+  updatePreset(
+    @Param('type') type: string,
+    @Param('uuid') uuid: string,
+    @Param('presetId') presetId: string,
+    @Body() detail: UpdatePresetDto,
+  ) {
+    return this.setService.updatePrestById(type, uuid, presetId, detail);
   }
 }
