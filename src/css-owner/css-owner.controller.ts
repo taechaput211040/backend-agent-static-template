@@ -22,7 +22,7 @@ export class CssOwnerController {
   }
 
   //createOrganize
-  @Post('/organization')
+  @Post('/organization/:type')
   createOrganize(@Body() input: any, @Param('type') type: any) {
     return this.setService.setOrganizeByDomain(input, type);
   }

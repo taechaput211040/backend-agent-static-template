@@ -47,7 +47,10 @@ export class CssOwnerService {
   ): Promise<agentOrganize> {
     if (type.toLowerCase() === `agent`) {
       const exitingOrganize = await this.organize_repo.findOne({
-        where: [{ domain: input.domain }, { company: input.company }],
+        where: [
+          { domain: new URL(input.domain).host },
+          { company: input.company },
+        ],
       });
       if (exitingOrganize)
         throw new BadRequestException(['domain or company is already taken']);
@@ -98,7 +101,11 @@ export class CssOwnerService {
   private async getIdbyOrigins(headers) {
     const headerWeb = headers.origin;
     const uuid = await this.organize_repo.findOne({
-      where: [{ domain: headerWeb }],
+      where: [
+        {
+          domain: new URL(headerWeb).host ? new URL(headerWeb).host : headerWeb,
+        },
+      ],
     });
     return uuid;
   }
