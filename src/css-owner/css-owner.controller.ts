@@ -6,7 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { type } from 'os';
 import { CreatePreset } from './input/create.preset.dto';
 import { UpdatePresetDto } from './input/update.preset.dto';
@@ -53,4 +56,6 @@ export class CssOwnerController {
   ) {
     return this.setService.updatePrestById(type, uuid, presetId, detail);
   }
+
+
 }

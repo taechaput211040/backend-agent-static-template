@@ -28,7 +28,7 @@ export class agentOrganize {
   @Expose()
   logo: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   company: string;
 

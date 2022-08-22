@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { url } from 'inspector';
 import { Repository } from 'typeorm';
 import { AgentPreset } from '../entity/agentClass.entity';
 import { agentOrganize } from '../entity/profile.entity';
@@ -46,6 +47,7 @@ export class CssOwnerService {
     type,
   ): Promise<agentOrganize> {
     if (type.toLowerCase() === `agent`) {
+      console.log(new URL(input.domain));
       const exitingOrganize = await this.organize_repo.findOne({
         where: [
           { domain: new URL(input.domain).host },
@@ -99,14 +101,15 @@ export class CssOwnerService {
   }
 
   private async getIdbyOrigins(headers) {
-    const headerWeb = headers.origin;
+    console.log(headers.origin, 'headerweb');
     const uuid = await this.organize_repo.findOne({
       where: [
         {
-          domain: new URL(headerWeb).host ? new URL(headerWeb).host : headerWeb,
+          domain: headers.origin,
         },
       ],
     });
+    if (!uuid) throw new NotFoundException(['Profile is not find!!!']);
     return uuid;
   }
 
@@ -116,7 +119,11 @@ export class CssOwnerService {
     if (!profile || !result) {
       throw new NotFoundException(['Profile is not find!!!']);
     } else {
-      return result.detail;
+      return {
+        presetId: result.id,
+        web_id: result.web_id,
+        ...result.detail,
+      };
     }
   }
 
@@ -137,12 +144,15 @@ export class CssOwnerService {
         // return agentPreset;
         throw new NotFoundException(['preset not find!!!']);
       } else {
-        return await (
-          await this.agentpreset_repo.save({
-            ...agentPreset,
-            detail: detail,
-          })
-        ).detail;
+        let result = await this.agentpreset_repo.save({
+          ...agentPreset,
+          detail: detail,
+        });
+        return {
+          ...result.detail,
+          presetId: result.id,
+          web_id: result.web_id,
+        };
       }
     }
     return;

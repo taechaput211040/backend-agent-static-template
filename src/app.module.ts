@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,11 +8,15 @@ import ormConfig from './config/orm.config';
 import ormConfigProd from './config/orm.config.prod';
 import { CssOwnerModule } from './css-owner/css-owner.module';
 import { AgentPreset } from './css-owner/entity/agentClass.entity';
+import { Images } from './css-owner/entity/Images.entity';
 import { agentOrganize, ricoOrganize } from './css-owner/entity/profile.entity';
 import { RicoPreset } from './css-owner/entity/ricoCss.entity';
+import { ImagesService } from './css-owner/service/image.service';
+import { ImageController } from './image/image.controller';
 
 @Module({
   imports: [
+    MulterModule.register({ dest: './upload' }),
     CssOwnerModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -24,7 +29,6 @@ import { RicoPreset } from './css-owner/entity/ricoCss.entity';
         process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
     // useFactory เหมือนเป็นการสร้าง Factory Function เพื่อให้สามารถนำค่าที่ Config ภายในฟังก์ชันไปเป็นส่วนหนึ่งของ TypeORM
-    TypeOrmModule.forFeature([agentOrganize, AgentPreset,RicoPreset,ricoOrganize]),
   ],
   controllers: [AppController],
   providers: [AppService],
