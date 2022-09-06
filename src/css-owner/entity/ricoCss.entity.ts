@@ -11,7 +11,9 @@ import {
 import { ricoOrganize } from './profile.entity';
 @Entity()
 export class RicoPreset {
-  constructor() {}
+  constructor(partial?: Partial<RicoPreset | RicoPreset[]>) {
+    Object.assign(this, partial);
+  }
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -42,7 +44,6 @@ export class RicoPreset {
   @Column({ nullable: false })
   @Expose()
   web_id: string;
-
 
   @Column({ nullable: true, default: 'true' })
   @Expose()

@@ -23,7 +23,7 @@ export class agentOrganize {
 
   @Column({
     default:
-      'https://image-storage-betkub.s3.ap-southeast-1.amazonaws.com/images/ffeuZ2TFVCcdP123zqF7aufImZoUhmGZaVu5zcMx.png',
+      'https://smart-binary.cloud/storage/testApi/logoDefult.png',
   })
   @Expose()
   logo: string;
@@ -70,19 +70,16 @@ export class ricoOrganize {
   domain: string;
 
   @Column({
-    default:
-      'https://image-storage-betkub.s3.ap-southeast-1.amazonaws.com/images/ffeuZ2TFVCcdP123zqF7aufImZoUhmGZaVu5zcMx.png',
+    default: 'https://smart-binary.cloud/storage/testApi/logoDefult.png',
   })
   @Expose()
   logo: string;
 
- 
-  @Column()
+  @Column({ nullable: false })
   @Expose()
   company: string;
 
-  
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   @Expose()
   agent: string;
 
@@ -100,7 +97,6 @@ export class ricoOrganize {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updated_at: Date;
-
 
   @Column()
   @Expose()

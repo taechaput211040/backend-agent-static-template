@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,11 +11,20 @@ import { agentOrganize, ricoOrganize } from './entity/profile.entity';
 import { RicoPreset } from './entity/ricoCss.entity';
 import { CssOwnerService } from './service/css-owner.service';
 import { ImagesService } from './service/image.service';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   controllers: [CssOwnerController, ImageController],
   providers: [CssOwnerService, ImagesService],
   imports: [
+    CacheModule.register({
+      store: redisStore,
+      host: process.env.REDIS_SERVER,
+      port: process.env.REDIS_PORT,
+      password: process.env.REDIS_PASSWORD,
+      ttl: null,
+      db: 15,
+    }),
     FtpModule.forRootFtpAsync({
       useFactory: async () => {
         return {

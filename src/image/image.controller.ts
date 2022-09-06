@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Param,
   Post,
@@ -16,8 +17,9 @@ export class ImageController {
   handleUpload(
     @Param('folder') folder: string,
     @UploadedFile() file: Express.Multer.File,
+    @Body() input: any,
   ) {
     // return file
-    return this.imageService.uploadFile(file, folder);
+    return this.imageService.uploadFile(file, folder, input);
   }
 }
