@@ -1,0 +1,94 @@
+image: docker:19
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://localhost:2375
+
+services:
+  - docker:19-dind
+
+
+build:
+  stage: build
+  when: manual
+  only:
+    - triggers
+    - develop
+    - /release\/\w+|$/
+    - /release\/\w+|$/
+  artifacts:
+    paths:
+      - Dockerfile
+  before_script:
+    # $CI_JOB_TOKEN is variable automatically added by Gitlab: see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+    - IMAGE_TAG="$(echo "$CI_BUILD_REF_NAME" | tr '/' '-')"
+  script:
+    - docker pull $CI_REGISTRY_IMAGE || true # Allows us to use --cache-from
+    - docker build --rm --cache-from $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+
+build-main:
+  stage: build
+  only:
+    - main
+  artifacts:
+    paths:
+      - Dockerfile
+  before_script:
+    # $CI_JOB_TOKEN is variable automatically added by Gitlab: see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+    - IMAGE_TAG="$(echo "$CI_BUILD_REF_NAME" | tr '/' '-')"
+  script:
+    - docker pull $CI_REGISTRY_IMAGE || true # Allows us to use --cache-from
+    - docker build --rm --cache-from $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+
+push-to-gcp:
+  stage: deploy
+  when: manual
+  except:
+    - tags
+  before_script:
+    # Login to Gitlab registry
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+    # Login to Google Cloud Registry
+    - echo $GOOGLE_CLOUD_ACCOUNT | base64 -d  | docker login -u _json_key --password-stdin https://asia.gcr.io
+    - IMAGE_TAG="$(echo "$CI_BUILD_REF_NAME" | tr '/' '-')"
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$IMAGE_TAG $GCR_IMAGE:$IMAGE_TAG
+    - docker push $GCR_IMAGE:$IMAGE_TAG
+
+build-tag:
+  stage: build
+  only:
+    - tags
+  artifacts:
+    paths:
+      - Dockerfile
+  before_script:
+    # $CI_JOB_TOKEN is variable automatically added by Gitlab: see https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+    - IMAGE_TAG="$(echo "$CI_BUILD_REF_NAME" | tr '/' '-')"
+  script:
+    - docker pull $CI_REGISTRY_IMAGE || true # Allows us to use --cache-from
+    - docker build --rm --cache-from $CI_COMMIT_TAG -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+
+push-to-gcp-tag:
+  stage: deploy
+  when: manual
+  only:
+    - tags
+  before_script:
+    # Login to Gitlab registry
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_IMAGE
+    # Login to Google Cloud Registry
+    - echo $GOOGLE_CLOUD_ACCOUNT | base64 -d  | docker login -u _json_key --password-stdin https://asia.gcr.io
+    - IMAGE_TAG="$(echo "$CI_COMMIT_TAG" | tr '/' '-')"
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$IMAGE_TAG $GCR_IMAGE:$IMAGE_TAG
+    - docker push $GCR_IMAGE:$IMAGE_TAG

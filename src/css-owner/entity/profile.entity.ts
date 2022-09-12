@@ -75,11 +75,11 @@ export class ricoOrganize {
   @Expose()
   logo: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Expose()
   company: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Expose()
   agent: string;
 

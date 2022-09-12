@@ -94,6 +94,15 @@ export class CssOwnerController {
     let profile = await this.setService.getProfilebyID(uuid, type);
     const profileCach = 'get_data' + profile.domain;
     await this.cacheManager.del(profileCach);
-    return await this.setService.updatePrestById(type, uuid, presetId, detail);
+    let result = await this.setService.updatePrestById(
+      type,
+      uuid,
+      presetId,
+      detail,
+    );
+    if (result) {
+      await this.cacheManager.set(`${profileCach}`, result);
+      return result;
+    }
   }
 }

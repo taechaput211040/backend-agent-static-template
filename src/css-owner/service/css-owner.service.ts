@@ -189,6 +189,7 @@ export class CssOwnerService {
   public async getOnePresetbyId(type: string, headers: string) {
     const profile = await this.getIdbyOrigins(headers, type);
     const result = await this.getPresetByOrganize(type, profile.id).getOne();
+    console.log('profile', profile);
     if (!profile || !result) {
       throw new NotFoundException(['Profile is not find!!!']);
     } else {
@@ -207,6 +208,7 @@ export class CssOwnerService {
     presetId: string,
     detail: UpdatePresetDto,
   ): Promise<AgentPreset> {
+    let profile = await this.getProfilebyID(id, type);
     if (type.toLowerCase() === `agent`) {
       const agentPreset = await this.agentpreset_repo
         .createQueryBuilder('t')
@@ -226,6 +228,7 @@ export class CssOwnerService {
           ...result.detail,
           presetId: result.id,
           web_id: result.web_id,
+          logo: profile.logo,
         };
       }
     } else if (type.toLowerCase() === `rico`) {
@@ -247,6 +250,7 @@ export class CssOwnerService {
           ...result.detail,
           presetId: result.id,
           web_id: result.web_id,
+          logo: profile.logo,
         };
       }
     } else throw new NotFoundException(['Type is Not Found!!!']);
