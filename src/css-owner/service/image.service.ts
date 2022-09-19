@@ -48,7 +48,7 @@ export class ImagesService {
         throw new BadRequestException(['Size of image is more than 500kb !!!']);
       }
     } else {
-      throw new BadRequestException(['Type of image is Invalid !!!']);
+      throw new BadRequestException(['Type of image is Invalid !!!!']);
     }
     // var fs = require('fs');
     // var buffer = fs.readFileSync(file.path);
