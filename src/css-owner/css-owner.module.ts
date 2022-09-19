@@ -1,5 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FtpModule, FtpService } from 'nestjs-ftp';
@@ -17,14 +17,25 @@ import * as redisStore from 'cache-manager-redis-store';
   controllers: [CssOwnerController, ImageController],
   providers: [CssOwnerService, ImagesService],
   imports: [
-    CacheModule.register({
-      store: redisStore,
-      host: process.env.REDIS_SERVER,
-      port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PASSWORD,
-      ttl: null,
-      db: process.env.REDIS_DB,
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: () => ({
+        store: redisStore,
+        host: process.env.REDIS_SERVER,
+        port: process.env.REDIS_PORT,
+        password: (process.env.REDIS_PASSWORD == '' ? undefined : process.env.REDIS_PASSWORD),
+        ttl: 172800,
+        db: process.env.REDIS_DB
+      })
     }),
+    // CacheModule.registerAsync({
+    //   store: redisStore,
+    //   host: process.env.REDIS_SERVER,
+    //   port: process.env.REDIS_PORT,
+    //   password: process.env.REDIS_PASSWORD,
+    //   ttl: null,
+    //   db: process.env.REDIS_DB,
+    // }),
     FtpModule.forRootFtpAsync({
       useFactory: async () => {
         return {
