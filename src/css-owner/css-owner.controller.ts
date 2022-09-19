@@ -30,11 +30,7 @@ export class CssOwnerController {
   getPreset(@Headers() headers) {
     return this.setService.getfucntion(headers);
   }
-  @Get('/Reset')
-  async clearCache() {
-    await this.cacheManager.reset();
-    throw new HttpException(null, 204);
-  }
+
 
   //getProfile by type
   @Get('/profile/:type')

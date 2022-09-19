@@ -23,15 +23,15 @@ import * as redisStore from 'cache-manager-redis-store';
       port: process.env.REDIS_PORT,
       password: process.env.REDIS_PASSWORD,
       ttl: null,
-      db: 15,
+      db: process.env.REDIS_DB,
     }),
     FtpModule.forRootFtpAsync({
       useFactory: async () => {
         return {
           host: process.env.FTP_HOST,
           password: process.env.FTP_PASSWORD,
-          port: 21,
           user: process.env.FTP_USER,
+          port: Number(process.env.FTP_PORT),
           secure: false,
         };
       },
