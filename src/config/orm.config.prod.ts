@@ -19,5 +19,9 @@ export default registerAs(
     database: process.env.DB_NAME,
     entities: [agentOrganize, AgentPreset, RicoPreset, ricoOrganize, Images],
     synchronize: false,
+    ssl: {
+      rejectUnauthorized: false,
+      // ca: atob(process.env.CROCK_DB_CERT),
+    },
   }),
 );
