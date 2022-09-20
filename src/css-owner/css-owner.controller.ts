@@ -31,7 +31,6 @@ export class CssOwnerController {
     return this.setService.getfucntion(headers);
   }
 
-
   //getProfile by type
   @Get('/profile/:type')
   getProfileByHeader(@Headers() headers, @Param('type') type: any) {
@@ -39,11 +38,14 @@ export class CssOwnerController {
   }
 
   @Patch('/profile/:type/:uuid')
-  updateProfileById(
+  async updateProfileById(
     @Param('type') type: any,
     @Param('uuid') uuid: string,
     @Body() input: UpdateAgentOrganize,
   ) {
+    let profile = await this.setService.getProfilebyID(uuid, type);
+    const profileCach = 'get_data' + profile.domain;
+    await this.cacheManager.del(profileCach);
     return this.setService.updateProfile(type, uuid, input);
   }
 
