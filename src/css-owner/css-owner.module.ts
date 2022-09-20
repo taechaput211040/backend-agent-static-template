@@ -24,7 +24,7 @@ import * as redisStore from 'cache-manager-redis-store';
         host: process.env.REDIS_SERVER,
         port: process.env.REDIS_PORT,
         password: (process.env.REDIS_PASSWORD == '' ? undefined : process.env.REDIS_PASSWORD),
-        ttl: 172800,
+        ttl: null,
         db: process.env.REDIS_DB
       })
     }),
