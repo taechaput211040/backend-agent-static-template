@@ -56,7 +56,9 @@ export class CssOwnerService {
       const exitingOrganize = await this.organize_repo.findOne({
         where: [{ domain: domain }],
       });
-      if (exitingOrganize) throw new BadRequestException(['domain or company is already taken']);
+      if (exitingOrganize) {
+        return exitingOrganize;
+      }
       const result = await this.organize_repo.save({
         ...input,
       });
@@ -65,7 +67,9 @@ export class CssOwnerService {
       const exitingOrganizeRico = await this.organizeRico_repo.findOne({
         where: [{ domain: domain }],
       });
-      if (exitingOrganizeRico) throw new BadRequestException(['domain or agentPrefix is already taken']);
+      if (exitingOrganizeRico) {
+        return exitingOrganizeRico;
+      }
       const result = await this.organizeRico_repo.save({
         ...input,
       });
