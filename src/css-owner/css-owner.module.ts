@@ -23,10 +23,10 @@ import * as redisStore from 'cache-manager-redis-store';
         store: redisStore,
         host: process.env.REDIS_SERVER,
         port: process.env.REDIS_PORT,
-        password: (process.env.REDIS_PASSWORD == '' ? undefined : process.env.REDIS_PASSWORD),
+        password: process.env.REDIS_PASSWORD == '' ? undefined : process.env.REDIS_PASSWORD,
         ttl: null,
-        db: process.env.REDIS_DB
-      })
+        db: process.env.REDIS_DB,
+      }),
     }),
     // CacheModule.registerAsync({
     //   store: redisStore,
@@ -49,13 +49,7 @@ import * as redisStore from 'cache-manager-redis-store';
       inject: [ConfigService],
     }),
     // MulterModule.register({ dest: './upload' }),
-    TypeOrmModule.forFeature([
-      agentOrganize,
-      AgentPreset,
-      RicoPreset,
-      ricoOrganize,
-      Images,
-    ]),
+    TypeOrmModule.forFeature([agentOrganize, AgentPreset, RicoPreset, ricoOrganize, Images]),
   ],
 })
 export class CssOwnerModule {}

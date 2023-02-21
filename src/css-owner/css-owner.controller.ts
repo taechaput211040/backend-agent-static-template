@@ -21,10 +21,7 @@ import { CssOwnerService } from './service/css-owner.service';
 import { Cache } from 'cache-manager';
 @Controller('/css')
 export class CssOwnerController {
-  constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly setService: CssOwnerService,
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private readonly setService: CssOwnerService) {}
   @Get()
   // @Header('origin', 'none')
   getPreset(@Headers() headers) {
@@ -38,12 +35,8 @@ export class CssOwnerController {
   }
 
   @Patch('/profile/:type/:uuid')
-  async updateProfileById(
-    @Param('type') type: any,
-    @Param('uuid') uuid: string,
-    @Body() input: UpdateAgentOrganize,
-  ) {
-    let profile = await this.setService.getProfilebyID(uuid, type);
+  async updateProfileById(@Param('type') type: any, @Param('uuid') uuid: string, @Body() input: UpdateAgentOrganize) {
+    const profile = await this.setService.getProfilebyID(uuid, type);
     const profileCach = 'get_data' + profile.domain;
     await this.cacheManager.del(profileCach);
     return this.setService.updateProfile(type, uuid, input);
@@ -57,25 +50,21 @@ export class CssOwnerController {
 
   //create Preset
   @Post('/preset/:type/:uuid')
-  createpreset(
-    @Param('type') type: string,
-    @Param('uuid') uuid: string,
-    @Body() detail: CreatePreset,
-  ) {
+  createpreset(@Param('type') type: string, @Param('uuid') uuid: string, @Body() detail: CreatePreset) {
     return this.setService.createPreset(type, uuid, detail);
   }
 
   //get Preset By type
   @Get('/preset/:type')
   async getpreset(@Param('type') type: string, @Headers() headers) {
-    let value = await this.cacheManager.get('get_data' + headers.origin);
+    const value = await this.cacheManager.get('get_data_2' + headers.origin);
     if (value) {
       console.log('cach', value);
       return value;
     }
-    let result = await this.setService.getOnePresetbyId(type, headers);
+    const result = await this.setService.getOnePresetbyId(type, headers);
     if (result) {
-      await this.cacheManager.set('get_data' + headers.origin, result);
+      await this.cacheManager.set('get_data_2' + headers.origin, result);
       console.log('nocach');
       return result;
     }
@@ -89,15 +78,10 @@ export class CssOwnerController {
     @Param('presetId') presetId: string,
     @Body() detail: UpdatePresetDto,
   ) {
-    let profile = await this.setService.getProfilebyID(uuid, type);
+    const profile = await this.setService.getProfilebyID(uuid, type);
     const profileCach = 'get_data' + profile.domain;
     await this.cacheManager.del(profileCach);
-    let result = await this.setService.updatePrestById(
-      type,
-      uuid,
-      presetId,
-      detail,
-    );
+    const result = await this.setService.updatePrestById(type, uuid, presetId, detail);
     if (result) {
       await this.cacheManager.set(`${profileCach}`, result);
       return result;

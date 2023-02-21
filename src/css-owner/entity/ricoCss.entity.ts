@@ -1,13 +1,5 @@
 import { Expose } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ricoOrganize } from './profile.entity';
 @Entity()
 export class RicoPreset {

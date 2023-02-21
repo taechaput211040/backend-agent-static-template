@@ -1,15 +1,9 @@
-import {
-  BadGatewayException,
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FtpService } from 'nestjs-ftp';
 import { Repository } from 'typeorm';
 import { Images } from '../entity/Images.entity';
-import { v4 as uuid } from 'uuid';
 import { Readable } from 'stream';
 
 @Injectable()
@@ -31,10 +25,10 @@ export class ImagesService {
         const filename = `${folderName}-${file.originalname}`;
         const fileDest = `/testApi/${filename}`;
         const ftp = await this._ftpService.upload(stream, fileDest);
-        console.log(ftp)
+        console.log(ftp);
         // await this._ftpService.delete(fileDest);
         if (ftp.code >= 400) {
-          throw new BadGatewayException();
+          throw new BadRequestException();
         }
         // } catch (error) {
         //     console.log(error)

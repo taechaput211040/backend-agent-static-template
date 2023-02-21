@@ -2,10 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AgentPreset } from 'src/css-owner/entity/agentClass.entity';
 import { Images } from 'src/css-owner/entity/Images.entity';
-import {
-  agentOrganize,
-  ricoOrganize,
-} from 'src/css-owner/entity/profile.entity';
+import { agentOrganize, ricoOrganize } from 'src/css-owner/entity/profile.entity';
 import { RicoPreset } from 'src/css-owner/entity/ricoCss.entity';
 
 export default registerAs(

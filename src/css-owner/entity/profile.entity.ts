@@ -1,13 +1,5 @@
 import { Expose } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { AgentPreset } from './agentClass.entity';
 import { RicoPreset } from './ricoCss.entity';
 
@@ -22,8 +14,7 @@ export class agentOrganize {
   domain: string;
 
   @Column({
-    default:
-      'https://smart-binary.cloud/storage/testApi/logoDefult.png',
+    default: 'https://smart-binary.cloud/storage/testApi/logoDefult.png',
   })
   @Expose()
   logo: string;

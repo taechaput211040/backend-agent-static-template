@@ -1,11 +1,4 @@
-import {
-  BadGatewayException,
-  BadRequestException,
-  Body,
-  Header,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Body, Header, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { url } from 'inspector';
 import { Repository } from 'typeorm';
@@ -57,47 +50,33 @@ export class CssOwnerService {
   }
 
   // set profile origanize service
-  async setOrganizeByDomain(
-    input: CreateOrganizeDto,
-    type,
-  ): Promise<agentOrganize> {
+  async setOrganizeByDomain(input: CreateOrganizeDto, type): Promise<agentOrganize> {
+    const domain = new URL(input.domain).host;
     if (type.toLowerCase() === `agent`) {
-      console.log(new URL(input.domain));
       const exitingOrganize = await this.organize_repo.findOne({
-        where: [
-          { domain: new URL(input.domain).host },
-          { company: input.company },
-        ],
+        where: [{ domain: domain }],
       });
-      if (exitingOrganize)
-        throw new BadRequestException(['domain or company is already taken']);
-      let result = await this.organize_repo.save({
+      if (exitingOrganize) throw new BadRequestException(['domain or company is already taken']);
+      const result = await this.organize_repo.save({
         ...input,
       });
       return result;
     } else if (type.toLowerCase() === `rico`) {
       const exitingOrganizeRico = await this.organizeRico_repo.findOne({
-        where: [{ domain: new URL(input.domain).host }, { agent: input.agent }],
+        where: [{ domain: domain }],
       });
-      if (exitingOrganizeRico)
-        throw new BadRequestException([
-          'domain or agentPrefix is already taken',
-        ]);
-      let result = await this.organizeRico_repo.save({
+      if (exitingOrganizeRico) throw new BadRequestException(['domain or agentPrefix is already taken']);
+      const result = await this.organizeRico_repo.save({
         ...input,
       });
       return result;
     } else {
-      throw new BadGatewayException(['Type not declear!!']);
+      throw new BadRequestException(['Type not declear!!']);
     }
   }
 
   //create Preset service by web_id
-  public async createPreset(
-    type: string,
-    uuid: string,
-    detail: CreatePreset,
-  ): Promise<AgentPreset> {
+  public async createPreset(type: string, uuid: string, detail: CreatePreset): Promise<AgentPreset> {
     //
     const currentOrganize = await this.getProfileAgentOrganize(uuid, type);
     if (currentOrganize) {
@@ -116,32 +95,27 @@ export class CssOwnerService {
         return await this.ricopreset_repo.save(rico_preset);
       }
     }
-    throw new BadGatewayException(['Update Failed!!']);
+    throw new BadRequestException(['Update Failed!!']);
   }
 
   private getPresetByOrganize(type, uuid) {
     if (type.toLowerCase() === 'agent') {
-      return this.agentpreset_repo
-        .createQueryBuilder('t')
-        .where('t.web_id = :web_id', { web_id: uuid })
-        .orderBy('t.created_at', 'ASC');
+      return this.agentpreset_repo.createQueryBuilder('t').where('t.web_id = :web_id', { web_id: uuid }).orderBy('t.created_at', 'ASC');
     } else if (type.toLowerCase() === 'rico') {
-      return this.ricopreset_repo
-        .createQueryBuilder('t')
-        .where('t.web_id = :web_id', { web_id: uuid })
-        .orderBy('t.created_at', 'ASC');
+      return this.ricopreset_repo.createQueryBuilder('t').where('t.web_id = :web_id', { web_id: uuid }).orderBy('t.created_at', 'ASC');
     } else {
       throw new NotFoundException(['result is not found']);
     }
   }
 
   public async getIdbyOrigins(headers, type) {
+    const domain = new URL(headers.domain).host;
     let profile = undefined;
     if (type.toLowerCase() === `agent`) {
       profile = await this.organize_repo.findOne({
         where: [
           {
-            domain: headers.origin,
+            domain: domain,
           },
         ],
       });
@@ -149,7 +123,7 @@ export class CssOwnerService {
       profile = await this.organizeRico_repo.findOne({
         where: [
           {
-            domain: headers.origin,
+            domain: domain,
           },
         ],
       });
@@ -189,7 +163,7 @@ export class CssOwnerService {
   public async getOnePresetbyId(type: string, headers: string) {
     const profile = await this.getIdbyOrigins(headers, type);
     const result = await this.getPresetByOrganize(type, profile.id).getOne();
-    console.log('profile', profile);
+    console.log('profile', profile.id);
     if (!profile || !result) {
       throw new NotFoundException(['Profile is not find!!!']);
     } else {
@@ -202,13 +176,8 @@ export class CssOwnerService {
     }
   }
 
-  public async updatePrestById(
-    type: string,
-    id: string,
-    presetId: string,
-    detail: UpdatePresetDto,
-  ): Promise<AgentPreset> {
-    let profile = await this.getProfilebyID(id, type);
+  public async updatePrestById(type: string, id: string, presetId: string, detail: UpdatePresetDto): Promise<AgentPreset> {
+    const profile = await this.getProfilebyID(id, type);
     if (type.toLowerCase() === `agent`) {
       const agentPreset = await this.agentpreset_repo
         .createQueryBuilder('t')
@@ -220,7 +189,7 @@ export class CssOwnerService {
         // return agentPreset;
         throw new NotFoundException(['preset not find!!!']);
       } else {
-        let result = await this.agentpreset_repo.save({
+        const result = await this.agentpreset_repo.save({
           ...agentPreset,
           detail: detail,
         });
@@ -242,7 +211,7 @@ export class CssOwnerService {
         // return agentPreset;
         throw new NotFoundException(['preset not find!!!']);
       } else {
-        let result = await this.ricopreset_repo.save({
+        const result = await this.ricopreset_repo.save({
           ...ricoPreset,
           detail: detail,
         });
@@ -256,18 +225,14 @@ export class CssOwnerService {
     } else throw new NotFoundException(['Type is Not Found!!!']);
   }
 
-  public async updateProfile(
-    type: string,
-    uuid: string,
-    input: UpdateAgentOrganize,
-  ): Promise<agentOrganize> {
+  public async updateProfile(type: string, uuid: string, input: UpdateAgentOrganize): Promise<agentOrganize> {
     if (type.toLowerCase() === `agent`) {
       const agentProfile = await this.organize_repo
         .createQueryBuilder('t')
         .where('t.id = :id', { id: uuid })
         .orderBy('t.created_at', 'ASC')
         .getOne();
-      let result = await this.organize_repo.save({
+      const result = await this.organize_repo.save({
         ...agentProfile,
         ...input,
       });
@@ -278,13 +243,13 @@ export class CssOwnerService {
         .where('t.id = :id', { id: uuid })
         .orderBy('t.created_at', 'ASC')
         .getOne();
-      let result = await this.organizeRico_repo.save({
+      const result = await this.organizeRico_repo.save({
         ...Profile,
         ...input,
       });
       return result;
     } else {
-      throw new BadGatewayException(['Profile update Failed']);
+      throw new BadRequestException(['Profile update Failed']);
     }
   }
 }

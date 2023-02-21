@@ -1,12 +1,5 @@
 import { Expose } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Images {

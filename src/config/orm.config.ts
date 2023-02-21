@@ -14,7 +14,7 @@ export default registerAs(
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [agentOrganize, AgentPreset,RicoPreset,ricoOrganize,Images],
+    entities: [agentOrganize, AgentPreset, RicoPreset, ricoOrganize, Images],
     synchronize: true,
     ssl: {
       rejectUnauthorized: false,

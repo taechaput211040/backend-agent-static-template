@@ -20,8 +20,7 @@ import { CssOwnerModule } from './css-owner/css-owner.module';
       // กำหนดค่าdefult
     }),
     TypeOrmModule.forRootAsync({
-      useFactory:
-        process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
+      useFactory: process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
     // useFactory เหมือนเป็นการสร้าง Factory Function เพื่อให้สามารถนำค่าที่ Config ภายในฟังก์ชันไปเป็นส่วนหนึ่งของ TypeORM
   ],
