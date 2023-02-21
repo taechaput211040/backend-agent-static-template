@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { UpdateAgentOrganize } from './input/update.organize.dto';
 import { UpdatePresetDto } from './input/update.preset.dto';
 import { CssOwnerService } from './service/css-owner.service';
 import { Cache } from 'cache-manager';
+import { Response } from 'express';
 @Controller('/css')
 export class CssOwnerController {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private readonly setService: CssOwnerService) {}
@@ -57,6 +59,7 @@ export class CssOwnerController {
   //get Preset By type
   @Get('/preset/:type')
   async getpreset(@Param('type') type: string, @Headers() headers) {
+    console.log('origin', headers.origin);
     const value = await this.cacheManager.get('get_data_2' + headers.origin);
     if (value) {
       console.log('cach', value);
@@ -86,5 +89,11 @@ export class CssOwnerController {
       await this.cacheManager.set(`${profileCach}`, result);
       return result;
     }
+  }
+
+  @Get('/reset/cache')
+  async getResetCache(@Res() res: Response) {
+    await this.cacheManager.reset();
+    res.status(200).send('(╯°□°）╯︵ ┻━┻) ');
   }
 }

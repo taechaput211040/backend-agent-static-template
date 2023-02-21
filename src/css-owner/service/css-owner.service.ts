@@ -51,7 +51,7 @@ export class CssOwnerService {
 
   // set profile origanize service
   async setOrganizeByDomain(input: CreateOrganizeDto, type): Promise<agentOrganize> {
-    const domain = new URL(input.domain).host;
+    const domain = input.domain.startsWith('http') ? new URL(input.domain).host : input.domain;
     if (type.toLowerCase() === `agent`) {
       const exitingOrganize = await this.organize_repo.findOne({
         where: [{ domain: domain }],
@@ -113,7 +113,7 @@ export class CssOwnerService {
   }
 
   public async getIdbyOrigins(headers, type) {
-    const domain = new URL(headers.domain).host;
+    const domain = new URL(headers.origin).host;
     let profile = undefined;
     if (type.toLowerCase() === `agent`) {
       profile = await this.organize_repo.findOne({
