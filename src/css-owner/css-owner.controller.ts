@@ -60,14 +60,14 @@ export class CssOwnerController {
   @Get('/preset/:type')
   async getpreset(@Param('type') type: string, @Headers() headers) {
     console.log('origin', headers.origin);
-    const value = await this.cacheManager.get('get_data_2' + headers.origin);
+    const value = await this.cacheManager.get('get_data' + headers.origin);
     if (value) {
       console.log('cach', value);
       return value;
     }
     const result = await this.setService.getOnePresetbyId(type, headers);
     if (result) {
-      await this.cacheManager.set('get_data_2' + headers.origin, result);
+      await this.cacheManager.set('get_data' + headers.origin, result);
       console.log('nocach');
       return result;
     }
